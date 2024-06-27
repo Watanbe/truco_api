@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<body>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="room" placeholder="Room">
+    <label for="team">Time:</label>
+
+    <select name="team" id="team">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">Qualquer um</option>
+    </select>
+
+    <button id="createbutton">Create Room</button>
+    <button id="joinbutton">Join Room</button>
+    <button id="startbutton">Start Room</button>
+    
+    <br>
+    <input type="text" id="id_card" placeholder="Card">
+    <button id="sendCard">sendCard</button>
+
+    <ul id="messages"></ul>
+    <input type="text" id="myMessage">
+    <button id="sendbutton">Send</button>
+
+    <button id="truco">Truco</button>
+    <button id="acceptTruco">Acept</button>
+    <button id="declineTruco">Decline</button>
+
+    <div>
+        <h4>Mão de 10</h4>
+        <button id="accept_ten_hand">Jogar</button>
+        <button id="decline_ten_hand">Correr</button>
+    </div>
+    
+<script type="text/javascript">
+$(document).ready(function() {
+
+    var socket = io.connect('http://127.0.0.1:22000');
+
+    $('#joinbutton').on('click', function() {
+        var username = $('#username').val();
+        var room = $('#room').val();
+        var team = $('#team').val();
+        console.log("room="+room);
+        socket.emit('connect_game', {username: username, room: room, team: team});
+    });
+
+    $('#startbutton').on('click', function() {
+        var room = $('#room').val();
+        socket.emit('start_game');
+    });
+
+    $('#createbutton').on('click', function() {
+        var username = $('#username').val();
+        socket.emit('create_game', {username: username});
+    });
+
+    socket.on('room_message', function(msg) {
+        $("#messages").append('<li>'+msg+'</li>');
+        console.log('Received message');
+    });
+
+    socket.on('your_cards',function(msg){
+        $("#messages").append('<li>'+msg+'</li>');
+        console.log(msg);
+    })
+
+    $('#sendbutton').on('click', function() {
+        var room = $('#room').val();
+        socket.emit('send message', {message: $('#myMessage').val(),room : room});
+        $('#myMessage').val('');
+    });
+
+    $('#sendCard').on('click', function(){
+        var id_card = $('#id_card').val();
+        socket.emit('throw_card', {card_code : id_card});
+    });
+
+    $('#truco').on('click', function(){
+        console.log('truco')
+        socket.emit('call_truco');
+    })
+
+    $('#acceptTruco').on('click', function(){
+        socket.emit('accept_truco');
+    })
+
+    $('#declineTruco').on('click', function(){
+        socket.emit('decline_truco')
+    })
+    $('#accept_ten_hand').on('click', function(){
+        socket.emit('accept_ten_hand')
+    })
+    $('#decline_ten_hand').on('click', function(){
+        socket.emit('decline_ten_hand')
+    })
+
+    socket.on('throwed_card',function(msg){
+        console.log('throwed_card')
+        console.log(msg);
+    })
+
+    socket.on('connect_successfully', function(data){
+        console.log('connect')
+        console.log(data)
+    })
+
+    socket.on('round_order', function(data){
+        console.log('round_order')
+        console.log(data)
+    })
+
+    socket.on('end_hand', function(data){
+        console.log('fim de mão')
+        console.log(data)
+    })
+
+    socket.on('end_round', function(data){
+        console.log('Fim de round')
+        console.log(data)
+    })
+
+    socket.on('accepted_truco', function(data){
+        console.log('accept')
+        console.log(data);
+    })
+
+    socket.on('receive_truco', function(data){
+        console.log('recieve')
+        console.log(data);
+    })
+
+    socket.on('declined_truco', function(data){
+        console.log('decline')
+        console.log(data);
+    })
+
+    socket.on('waiting_truco', function(data){
+        console.log('aguardando')
+        console.log(data);
+    })
+
+    socket.on('ten_hand', function(data){
+        console.log('Mão de 10')
+        console.log(data);
+    })
+    
+    socket.on('accepted_ten_hand', function(data){
+        console.log('Mão de 10 aceita')
+        console.log(data);
+    })
+
+    socket.on('declined_ten_hand', function(data){
+        console.log('Mão de 10 recusada')
+        console.log(data);
+    })
+   
+});
+</script>
+
+</body>
+</html>
