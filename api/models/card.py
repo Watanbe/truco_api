@@ -1,4 +1,4 @@
-from constants.server_constants import DECK_OF_CARDS_API_PORT,DECK_OF_CARDS_API_HOST
+from constants.server_constants import DECK_OF_CARDS_API_PORT,DECK_OF_CARDS_API_HOST,DECK_OF_CARDS_API_DNS
 CARDS_WEIGHT = {
     '4C': 14, '7H': 13, 'AS': 12, '7D': 11, # Special cards
 
@@ -59,7 +59,7 @@ class Card:
         Retorna a URL de uma imagem da carta com base em seu código.
         :return: Uma string contendo a URL da imagem da carta no formato 'https://deckofcardsapi.com/static/img/{code}.png'.
         """
-        return f"http://{DECK_OF_CARDS_API_HOST}:{DECK_OF_CARDS_API_PORT}/static/img/{self.code}.png"
+        return f"http://{DECK_OF_CARDS_API_DNS}/static/img/{self.code}.png"
     
     def __le__(self, other_card: 'Card') -> bool:
         if isinstance(other_card, Card):
